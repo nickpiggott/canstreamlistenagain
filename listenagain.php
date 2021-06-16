@@ -16,8 +16,9 @@ returns: an array of shows
 This call is "expensive" as it calls the Canstream server to get the RSS feed - there is no caching.
 Please use it ONCE per page if possible
 
-listenagain_render(<show>)
-takes: a show array
+listenagain_render(<shows>,<title>)
+takes: an array of show arrays (the output of listenagain_catalogue)
+takes: a title of a show to find the listen again information for
 returns: a string of HTML to render into the page
 
 listenagain_shortcode(<atts>)
