@@ -32,7 +32,7 @@ Please use it ONCE per page if possible
 
 **/
 
-// retrieves the most revent listen again for every show in the RSS feed
+// retrieves listen again feeds in reverse date order for every show in the RSS feed
 function listenagain_catalogue($rss_url) {
 	$date_regex_pattern = "/ (Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday) [0-9]{1,2} (January|February|March|April|May|June|July|August|September|October|November|December)/i";
 	$xml = simplexml_load_file($rss_url);
@@ -45,37 +45,48 @@ function listenagain_catalogue($rss_url) {
        		$shows[] = array("title" => $title,"pub_date" => $pub_date, "url" => $listenagain_url);
 	}
 
+
 	usort($shows, function ($a, $b) {
 		return $a['pub_date'] <= $b['pub_date'];
 	});
 
+	return $shows; 
+}
+
+// implements the [listenagain title="title"] shortcode
+function listenagain_shortcode($attrs) {
+
+	$shows = listenagain_catalogue('https://podcast.canstream.co.uk/ujimaradio/audio/rss.xml');
 	$unique_shows = array_reverse(array_values(array_column(
 		array_reverse($shows),
 		null,
 		'title'
 	)));
 
-        return $unique_shows;
-}
-
-// renders the HTML for a show, given the array of shows and a show title to look for
-function listenagain_render($shows,$title) {
-
-        $key = array_search($title,array_column($shows,"title"));
-        $show = $shows[$key];
-
+        $show = $unique_shows[array_search($attrs['title'],array_column($unique_shows,'title'))];
 	return '<div id="listen-again-'.str_replace(' ', '', $show['title']).'" class="listen-again-embed">'.$show['title'].'</div><div class="listen-again-date">'.date_format($show['pub_date'],'l dS F, H:i').'</div><div class="listen-again-player"><a href="'.$show['url'].'">PLAYER</a></div>';
 
 }
 
-// implements the [listenagain title="title"] shortcode
-function listenagain_shortcode($atts) {
+// implements the [listenagain_all title="title"] shortcode
+function listenagain_all_shortcode($attrs) {
 
-	$shows = listenagain_catalogue('https://podcast.canstream.co.uk/{your station name here}/audio/rss.xml');	
-	return listenagain_render($shows,$atts['title']);
+	$shows = listenagain_catalogue('https://podcast.canstream.co.uk/ujimaradio/audio/rss.xml');
+	$unique_shows = array_filter($shows, function ($a) {
+ 		return (strcmp($a['title'], 'Tommy Popcorn') == 0);
+	});
+
+
+	$html = '';
+	foreach ($unique_shows as $show) {
+		$html = $html . '<div id="listen-again-'.str_replace(' ', '', $show['title']).'" class="listen-again-embed">'.$show['title'].'</div><div class="listen-again-date">'.date_format($show['pub_date'],'l dS F, H:i').'</div><div class="listen-again-player"><a href="'.$show['url'].'">PLAYER</a></div>';
+	}
+	return $html;
 
 }
+
 add_shortcode( 'listenagain', 'listenagain_shortcode' );
+add_shortcode( 'listenagain_all', 'listenagain_all_shortcode' );
 
 
 ?>
