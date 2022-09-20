@@ -56,7 +56,7 @@ function listenagain_catalogue($rss_url) {
 // implements the [listenagain title="title"] shortcode
 function listenagain_shortcode($attrs) {
 
-	$shows = listenagain_catalogue('https://podcast.canstream.co.uk/ujimaradio/audio/rss.xml');
+	$shows = listenagain_catalogue('https://podcast.canstream.co.uk/{your station name here}/audio/rss.xml');
 	$unique_shows = array_reverse(array_values(array_column(
 		array_reverse($shows),
 		null,
@@ -71,7 +71,7 @@ function listenagain_shortcode($attrs) {
 // implements the [listenagain_all title="title"] shortcode
 function listenagain_all_shortcode($attrs) {
 
-	$shows = listenagain_catalogue('https://podcast.canstream.co.uk/ujimaradio/audio/rss.xml');
+	$shows = listenagain_catalogue('https://podcast.canstream.co.uk/{your station name here}/audio/rss.xml');
 	$unique_shows = array_filter($shows, function ($a) {
  		return (strcmp($a['title'], 'Tommy Popcorn') == 0);
 	});
