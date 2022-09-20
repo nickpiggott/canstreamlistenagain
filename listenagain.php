@@ -58,37 +58,24 @@ function listenagain_catalogue($rss_url) {
         return $unique_shows;
 }
 
-// renders the HTML for zero or more shows, given the array of shows
-function listenagain_render($shows) {
+// renders the HTML for a show, given the array of shows and a show title to look for
+function listenagain_render($shows,$title) {
 
-        $html = "";
-        foreach ($shows as $show) {
-        	$html += '<div id="listen-again-'.str_replace(' ', '', $show['title']).'" class="listen-again-embed">'.$show['title'].'</div><div class="listen-again-date">'.date_format($show['pub_date'],'l dS F, H:i').'</div><div class="listen-again-player"><a href="'.$show['url'].'">PLAYER</a></div>';
-	}
-	return $html;
+        $key = array_search($title,array_column($shows,"title"));
+        $show = $shows[$key];
+
+	return '<div id="listen-again-'.str_replace(' ', '', $show['title']).'" class="listen-again-embed">'.$show['title'].'</div><div class="listen-again-date">'.date_format($show['pub_date'],'l dS F, H:i').'</div><div class="listen-again-player"><a href="'.$show['url'].'">PLAYER</a></div>';
+
 }
-
-
-// implement the {listenagain_all] shortcode
-function listenagain_all_shortcode($atts) {
-
-	$shows = listenagain_catalogue('https://podcast.canstream.co.uk/{your station name here}/audio/rss.xml');
-        return listenagain_render($shows);
-}
-
 
 // implements the [listenagain title="title"] shortcode
 function listenagain_shortcode($atts) {
 
 	$shows = listenagain_catalogue('https://podcast.canstream.co.uk/{your station name here}/audio/rss.xml');	
-        $key = array_search($atts['title'],array_column($shows,"title"));
-
-	return listenagain_render($shows[$key]);
+	return listenagain_render($shows,$atts['title']);
 
 }
-
 add_shortcode( 'listenagain', 'listenagain_shortcode' );
-add_shortcode( 'listenagain_all', 'listenagain_all_shortcode' );
 
 
 ?>
