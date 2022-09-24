@@ -72,8 +72,8 @@ function listenagain_shortcode($attrs) {
 function listenagain_all_shortcode($attrs) {
 
 	$shows = listenagain_catalogue('https://podcast.canstream.co.uk/{your station name here}/audio/rss.xml');
-	$unique_shows = array_filter($shows, function ($a) {
- 		return (strcmp($a['title'], 'Tommy Popcorn') == 0);
+	$unique_shows = array_filter($shows, function ($a) use($attrs) {
+ 		return (strcmp($a['title'], $attrs['title']) == 0);
 	});
 
 
