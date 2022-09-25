@@ -88,7 +88,7 @@ function listenagain_all_shortcode($attrs) {
 	if (count($shows) === 0) {
             $html = '<div id="listen-again-empty" class="listen-again-embed">There aren\'t any listen again shows for ' . $attrs['title'].'</div>';
        		} else {
-				$html = ''       			
+				$html = '';       			
 				foreach ($unique_shows as $show) {
 					$html = $html . '<div id="listen-again-'.str_replace(' ', '', $show['title']).'" class="listen-again-embed">'.$show['title'].'</div><div class="listen-again-date">'.date_format($show['pub_date'],'l dS F, H:i').'</div><div class="listen-again-player"><a href="'.$show['url'].'">PLAYER</a></div>';
 					}		
