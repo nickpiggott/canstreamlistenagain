@@ -33,7 +33,7 @@ Please use it ONCE per page if possible
 **/
 
 // retrieves listen again feeds in reverse date order for every show in the RSS feed
-function listenagain_catalogue($rss_url) {
+function listenagain_catalogue($rss_url,$attrs) {
 	$date_regex_pattern = "/ (Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday) [0-9]{1,2} (January|February|March|April|May|June|July|August|September|October|November|December)/i";
 	$xml = simplexml_load_file($rss_url);
         $shows = array();
@@ -54,26 +54,19 @@ function listenagain_catalogue($rss_url) {
  		return (strcmp($a['title'], $attrs['title']) == 0);
 	});
 
-	return $unique_shows; 
+	return array_values($unique_shows); 
 }
 
 // implements the [listenagain title="title"] shortcode
 function listenagain_shortcode($attrs) {
 
 	$shows = listenagain_catalogue('https://podcast.canstream.co.uk/{your station name here}/audio/rss.xml',$attrs);
-
-//	$unique_shows = array_reverse(array_values(array_column(
-//      array_reverse($shows),
-//		null,
-//		'title'
-//	)));
-
-//        $show = $unique_shows[array_search($attrs['title'],array_column($unique_shows,'title'))];
         
     if (count($shows) === 0) {
-        $html = 'There is no listen again for '.$attrs['title'];
+        $html = '<div id="listen-again-empty" class="listen-again-embed">There isn\'t a listen again show for ' . $attrs['title'].'</div>';
         } else {
-        $html = '<div id="listen-again-'.str_replace(' ', '', $shows['title']).'" class="listen-again-embed">'.$shows['title'].'</div><div class="listen-again-date">'.date_format($shows['pub_date'],'l dS F, H:i').'</div><div class="listen-again-player"><a href="'.$shows['url'].'">PLAYER</a></div>';
+        $show = $shows[0]
+        $html = '<div id="listen-again-'.str_replace(' ', '', $show['title']).'" class="listen-again-embed">'.$show['title'].'</div><div class="listen-again-date">'.date_format($show['pub_date'],'l dS F, H:i').'</div><div class="listen-again-player"><a href="'.$show['url'].'">PLAYER</a></div>';
      }
          
 return $html;
@@ -89,7 +82,7 @@ function listenagain_all_shortcode($attrs) {
             $html = '<div id="listen-again-empty" class="listen-again-embed">There aren\'t any listen again shows for ' . $attrs['title'].'</div>';
        		} else {
 				$html = '';       			
-				foreach ($unique_shows as $show) {
+				foreach ($shows as $show) {
 					$html = $html . '<div id="listen-again-'.str_replace(' ', '', $show['title']).'" class="listen-again-embed">'.$show['title'].'</div><div class="listen-again-date">'.date_format($show['pub_date'],'l dS F, H:i').'</div><div class="listen-again-player"><a href="'.$show['url'].'">PLAYER</a></div>';
 					}		
 				}
