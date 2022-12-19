@@ -39,7 +39,7 @@ function listenagain_catalogue($rss_url,$attrs) {
         $shows = array();
 
 	foreach($xml->channel[0]->item as $item) {
-	 	$title = preg_replace($date_regex_pattern, "", $item->title);
+	 	$title = trim(preg_replace($date_regex_pattern, "", $item->title));
 		$pub_date = DateTime::createFromFormat('D, d M Y H:i:s O', $item->pubDate);
 		$listenagain_url = $item->enclosure->attributes()->{'url'};
        		$shows[] = array("title" => $title,"pub_date" => $pub_date, "url" => $listenagain_url);
